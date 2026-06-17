@@ -87,8 +87,8 @@ jobs:
       - name: Publish NPM packages
         run: pnpm -r publish --no-git-checks
 
-      - name: Purge WASM cache
-        run: node scripts/purge-cache.ts
+      # - name: Purge WASM cache
+      #   run: node scripts/purge-cache.ts
 
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
