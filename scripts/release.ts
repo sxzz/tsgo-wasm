@@ -32,7 +32,7 @@ async function writePublishVersion() {
 
     json.version = version
     json.buildInfo = {
-      date: date.toISOString().split('T')[0],
+      date: date.toISOString().split('T', 1)[0],
       commit: tsgoCommit,
     }
 
