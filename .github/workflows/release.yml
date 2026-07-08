@@ -10,6 +10,11 @@ on:
         description: Create a snapshot release
         required: false
         default: true
+      version:
+        type: string
+        description: Stable TypeScript Go version to release (e.g. 7.0.2). Leave empty for a dev build.
+        required: false
+        default: ''
 
 jobs:
   release:
@@ -23,7 +28,15 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Update submodules
-        run: git submodule update --init --remote
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            git submodule update --init
+            cd tsgo
+            git fetch --tags --force origin
+            git checkout "typescript/v${{ inputs.version }}"
+          else
+            git submodule update --init --remote
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
@@ -62,18 +75,22 @@ jobs:
           echo "tsgo_commit_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Create Tag
-        run: git tag ${{ steps.date.outputs.date }}
-        if: ${{ !inputs.snapshot }}
+        run: git tag ${{ inputs.version || steps.date.outputs.date }}
+        if: ${{ inputs.version || !inputs.snapshot }}
+
+      - name: Install dependencies
+        run: pnpm i
 
       - name: Patch Tsgo version
-        run: pnpm i && node scripts/tsgo-version.ts
+        run: node scripts/tsgo-version.ts
+        if: ${{ !inputs.version }}
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
           distribution: goreleaser
           version: ~> v2
-          args: release --clean --skip=validate ${{ inputs.snapshot && '--snapshot' || '' }}
+          args: release --clean --skip=validate ${{ !inputs.version && inputs.snapshot && '--snapshot' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TSGO_COMMIT: ${{ steps.tsgo_commit.outputs.tsgo_commit }}
@@ -82,6 +99,7 @@ jobs:
       - name: Release script
         run: node scripts/release.ts
         env:
+          RELEASE_VERSION: ${{ inputs.version }}
           TEST_RELEASE: ${{ inputs.snapshot || github.repository == 'sxzz/tsgo-wasm-dev' }}
 
       - name: Publish NPM packages

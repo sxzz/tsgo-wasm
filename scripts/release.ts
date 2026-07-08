@@ -10,9 +10,12 @@ await copyArtifacts()
 
 async function writePublishVersion() {
   const date = new Date()
-  let version = `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
-  if (process.env.TEST_RELEASE === 'true') {
-    version += `-${date.getHours()}.${date.getMinutes()}`
+  let version = process.env.RELEASE_VERSION
+  if (!version) {
+    version = `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
+    if (process.env.TEST_RELEASE === 'true') {
+      version += `-${date.getHours()}.${date.getMinutes()}`
+    }
   }
   console.info('current version:', version)
 
