@@ -103,7 +103,7 @@ jobs:
           TEST_RELEASE: ${{ inputs.snapshot || github.repository == 'sxzz/tsgo-wasm-dev' }}
 
       - name: Publish NPM packages
-        run: pnpm -r publish --no-git-checks
+        run: pnpm -r publish --no-git-checks --tag ${{ inputs.version && 'latest' || 'nightly' }}
 
       - name: Purge WASM cache
         run: node scripts/purge-cache.ts
