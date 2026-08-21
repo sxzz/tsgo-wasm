@@ -3,7 +3,7 @@ import path from 'node:path'
 
 const filePath = path.resolve(
   import.meta.dirname,
-  '../tsgo/internal/core/version.go',
+  '../tsgo/tsc/internal/core/version.go',
 )
 const fileContent = await readFile(filePath, 'utf8')
 const date = new Date().toISOString().split('T', 1)[0].replaceAll('-', '')

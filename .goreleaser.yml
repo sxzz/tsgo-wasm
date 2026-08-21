@@ -2,8 +2,8 @@ version: 2
 
 builds:
   - id: tsgo-wasm
-    dir: tsgo
-    main: ./cmd/tsgo
+    dir: tsgo/tsc
+    main: ./cmd/tsc
     binary: tsgo
     goos: [js]
     goarch: [wasm]
@@ -25,6 +25,6 @@ changelog:
 
 release:
   header: |
-    Daily automated WASM build of TypeScript Go from [`microsoft/typescript-go@{{ .Env.TSGO_COMMIT_SHORT }}`](https://github.com/microsoft/typescript-go/commit/{{ .Env.TSGO_COMMIT }}).
+    Daily automated WASM build of TypeScript Go from [`microsoft/TypeScript@{{ .Env.TSGO_COMMIT_SHORT }}`](https://github.com/microsoft/TypeScript/commit/{{ .Env.TSGO_COMMIT }}).
 
     Build date: {{ .Tag }}

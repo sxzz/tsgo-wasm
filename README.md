@@ -4,7 +4,7 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![Release][release-src]][release-href]
 
-**Unofficial** WebAssembly (WASM) distribution of [TypeScript 7](https://github.com/microsoft/typescript-go), automatically built daily via GitHub Actions.
+**Unofficial** WebAssembly (WASM) distribution of [TypeScript 7](https://github.com/microsoft/TypeScript), automatically built daily via GitHub Actions.
 
 Use this version if your operating system or architecture is not supported by the native build, or if you need to run it in browsers.
 
