@@ -19,11 +19,20 @@ async function writePublishVersion() {
   }
   console.info('current version:', version)
 
+  const tsgoDir = path.resolve(import.meta.dirname, '../tsgo')
   const tsgoCommit = execSync('git rev-parse HEAD', {
     encoding: 'utf8',
-    cwd: path.resolve(import.meta.dirname, '../tsgo'),
+    cwd: tsgoDir,
   }).trim()
   console.info('tsgo commit:', tsgoCommit)
+
+  const tsgoRepo = normalizeRepoUrl(
+    execSync('git config --get remote.origin.url', {
+      encoding: 'utf8',
+      cwd: tsgoDir,
+    }).trim(),
+  )
+  console.info('tsgo repo:', tsgoRepo)
 
   console.log({ root })
   for await (const file of glob('packages/*/package.json', {
@@ -36,6 +45,7 @@ async function writePublishVersion() {
     json.version = version
     json.buildInfo = {
       date: date.toISOString().split('T', 1)[0],
+      repo: tsgoRepo,
       commit: tsgoCommit,
     }
 
@@ -50,6 +60,13 @@ async function writePublishVersion() {
     )
     await cp(path.resolve(root, 'LICENSE'), path.resolve(pkgPath, 'LICENSE'))
   }
+}
+
+function normalizeRepoUrl(url: string) {
+  return url
+    .replace(/^git@([^:]+):/, 'https://$1/')
+    .replace(/^git\+/, '')
+    .replace(/\.git$/, '')
 }
 
 async function copyArtifacts() {
